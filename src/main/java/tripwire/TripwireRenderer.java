@@ -81,10 +81,13 @@ public final class TripwireRenderer {
         Draw.color(color);
         Lines.stroke(Math.max(0.6f * scale, TripwireSettings.lineWidth() * scale));
         forEachSegment(fence.points, (a, b) -> {
+            Draw.color(color);
             Lines.line(a.x, a.y, b.x, b.y);
             drawHatches(a, b, fence.isRightSide, scale);
-            if (units) drawUnitIcons(fence, a, b, scale);
         });
+        if (units) {
+            forEachSegment(fence.points, (a, b) -> drawUnitIcons(fence, a, b, scale));
+        }
         Draw.reset();
     }
 
@@ -94,8 +97,8 @@ public final class TripwireRenderer {
         if (len <= 0.001f) return;
         dx /= len;
         dy /= len;
-        float nx = rightSide ? dy : -dy;
-        float ny = rightSide ? -dx : dx;
+        float nx = rightSide ? -dy : dy;
+        float ny = rightSide ? dx : -dx;
         float spacing = 18f * scale;
         float hatch = 8f * scale;
         int count = Math.max(1, (int)(len / spacing));
