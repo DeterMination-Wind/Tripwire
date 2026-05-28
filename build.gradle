@@ -1,0 +1,77 @@
+plugins {
+    id "java"
+}
+
+group = "tripwire"
+version = "0.0.0"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+def mindustryVersion = (findProperty("mindustryVersion") ?: "v154.2").toString()
+
+repositories {
+    mavenCentral()
+    maven { url = "https://raw.githubusercontent.com/Zelaux/MindustryRepo/master/repository" }
+    maven { url "https://jitpack.io" }
+}
+
+configurations.configureEach {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == "com.github.Anuken.Arc" && details.requested.version == "ec5df18e54") {
+            details.useVersion(mindustryVersion)
+        }
+    }
+}
+
+dependencies {
+    compileOnly "com.github.Anuken.MindustryJitpack:core:$mindustryVersion"
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = "UTF-8"
+    if (JavaVersion.current().isCompatibleWith(JavaVersion.VERSION_1_9)) {
+        options.release.set(8)
+    }
+}
+
+jar {
+    archiveFileName = "Tripwire.zip"
+    from(projectDir) {
+        include "mod.json"
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+tasks.register("jarDesktop", Jar) {
+    group = "build"
+    dependsOn tasks.named("classes")
+    archiveFileName = "Tripwire-dev.jar"
+    from(sourceSets.main.output)
+    from(projectDir) {
+        include "mod.json"
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+def buildOutDir = new File(rootDir.parentFile, "构建/Tripwire")
+
+tasks.register("copyDevJarToBuildDir", Copy) {
+    doNotTrackState("Copies local dev artifact to workspace output folder.")
+    dependsOn tasks.named("jarDesktop")
+    from(tasks.named("jarDesktop").flatMap { it.archiveFile })
+    into(buildOutDir)
+    rename { _ -> "Tripwire-dev.jar" }
+}
+
+tasks.named("jarDesktop").configure {
+    finalizedBy tasks.named("copyDevJarToBuildDir")
+}
+
+tasks.register("deploy") {
+    group = "build"
+    dependsOn tasks.named("jar")
+    dependsOn tasks.named("jarDesktop")
+}
