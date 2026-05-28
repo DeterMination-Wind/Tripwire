@@ -2,6 +2,7 @@ package tripwire;
 
 import arc.Core;
 import arc.graphics.Color;
+import arc.input.KeyCode;
 import arc.scene.ui.Image;
 import arc.scene.ui.TextButton;
 import arc.scene.ui.TextField;
@@ -74,6 +75,11 @@ public final class TripwireConfig {
 
         filter(all, filtered, "");
         rebuild.run();
+        dialog.update(() -> {
+            if (Core.input.keyTap(KeyCode.mouseLeft) && !dialog.cont.hasMouse() && !dialog.buttons.hasMouse()) {
+                dialog.hide();
+            }
+        });
         dialog.show();
     }
 
