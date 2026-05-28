@@ -5,7 +5,6 @@ import arc.math.geom.Vec2;
 import mindustry.gen.Player;
 import mindustry.gen.Unit;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import static mindustry.Vars.player;
@@ -13,8 +12,7 @@ import static mindustry.Vars.tilesize;
 import static mindustry.Vars.ui;
 
 public final class TripwireAlert {
-    private static Object mindustryXMarkType;
-    private static Method mindustryXAtMethod;
+    private static Method mindustryXNewMarkFromChat;
     private static boolean mindustryXMarkerResolved;
     private static Method vanillaPingMethod;
     private static boolean vanillaPingResolved;
@@ -28,10 +26,11 @@ public final class TripwireAlert {
         int tileY = (int)(y / tilesize);
         String unitName = unit.type.localizedName;
         String message = Core.bundle.format("tripwire.alert.crossed", tileX, tileY, unitName);
+        String markerMessage = Core.bundle.format("tripwire.alert.marker", tileX, tileY);
         if (TripwireSettings.toastAlert()) {
             ui.announce(message, 4f);
         }
-        if (!markWithMindustryX(x, y)) {
+        if (!markWithMindustryX(markerMessage, tileX, tileY)) {
             markWithVanillaPing(x, y, Core.bundle.format("tripwire.alert.ping", unitName));
         }
         if (TripwireSettings.chatAlert() && ui.chatfrag != null) {
@@ -39,17 +38,15 @@ public final class TripwireAlert {
         }
     }
 
-    private static boolean markWithMindustryX(float x, float y) {
+    private static boolean markWithMindustryX(String markerMessage, int tileX, int tileY) {
         try {
             if (!mindustryXMarkerResolved) {
                 mindustryXMarkerResolved = true;
                 Class<?> markerType = Class.forName("mindustryX.features.MarkerType");
-                Field markField = markerType.getField("mark");
-                mindustryXMarkType = markField.get(null);
-                mindustryXAtMethod = markerType.getMethod("at", arc.math.geom.Position.class);
+                mindustryXNewMarkFromChat = markerType.getMethod("newMarkFromChat", String.class, Vec2.class);
             }
-            if (mindustryXMarkType == null || mindustryXAtMethod == null) return false;
-            mindustryXAtMethod.invoke(mindustryXMarkType, new Vec2(x, y));
+            if (mindustryXNewMarkFromChat == null) return false;
+            mindustryXNewMarkFromChat.invoke(null, markerMessage, new Vec2(tileX, tileY));
             return true;
         } catch (Throwable ignored) {
             return false;
