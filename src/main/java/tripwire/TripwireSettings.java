@@ -8,6 +8,7 @@ import mindustry.ui.dialogs.SettingsMenuDialog;
 public final class TripwireSettings {
     public static final String detectInterval = "tripwire-detect-interval";
     public static final String chatAlert = "tripwire-chat-alert";
+    public static final String chatBatchDelay = "tripwire-chat-batch-delay";
     public static final String toastAlert = "tripwire-toast-alert";
     public static final String showFences = "tripwire-show-fences";
     public static final String showMinimap = "tripwire-show-minimap";
@@ -17,14 +18,18 @@ public final class TripwireSettings {
     public static final String colorR = "tripwire-color-r";
     public static final String colorG = "tripwire-color-g";
     public static final String colorB = "tripwire-color-b";
+    private static final int[] chatBatchDelayMillis = {300, 450, 500, 600, 750, 900, 1000};
+    private static final int defaultChatBatchDelayIndex = 2;
 
     private TripwireSettings() {
     }
 
     public static void buildSettings(SettingsMenuDialog.SettingsTable table) {
         section(table, "tripwire-section-detection");
-        table.sliderPref(detectInterval, 3, 1, 10, 1, i -> i + "f");
+        migrateDetectionInterval();
+        table.sliderPref(detectInterval, 150, 100, 200, 10, i -> i + "ms");
         table.checkPref(chatAlert, true);
+        table.sliderPref(chatBatchDelay, defaultChatBatchDelayIndex, 0, chatBatchDelayMillis.length - 1, 1, TripwireSettings::formatChatBatchDelay);
         table.checkPref(toastAlert, true);
 
         section(table, "tripwire-section-display");
@@ -52,12 +57,34 @@ public final class TripwireSettings {
         table.pref(setting);
     }
 
-    public static int detectionFrames() {
-        return Mathf.clamp(Core.settings.getInt(detectInterval, 3), 1, 10);
+    public static int detectionMillis() {
+        int value = Core.settings.getInt(detectInterval, 150);
+        if (value < 100) return 150;
+        return Mathf.clamp(value, 100, 200);
+    }
+
+    private static void migrateDetectionInterval() {
+        int value = Core.settings.getInt(detectInterval, 150);
+        if (value < 100) Core.settings.put(detectInterval, 150);
     }
 
     public static boolean chatAlert() {
         return Core.settings.getBool(chatAlert, true);
+    }
+
+    public static float chatBatchDelayTicks() {
+        return chatBatchDelayMillis[chatBatchDelayIndex()] / 1000f * 60f;
+    }
+
+    private static int chatBatchDelayIndex() {
+        return Mathf.clamp(Core.settings.getInt(chatBatchDelay, defaultChatBatchDelayIndex), 0, chatBatchDelayMillis.length - 1);
+    }
+
+    private static String formatChatBatchDelay(int index) {
+        int millis = chatBatchDelayMillis[Mathf.clamp(index, 0, chatBatchDelayMillis.length - 1)];
+        if (millis % 1000 == 0) return millis / 1000 + "s";
+        if (millis % 100 == 0) return "0." + millis / 100 + "s";
+        return "0." + millis / 10 + "s";
     }
 
     public static boolean toastAlert() {

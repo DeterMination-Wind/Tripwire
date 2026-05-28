@@ -3,7 +3,7 @@ package tripwire;
 import arc.Events;
 import arc.math.geom.Vec2;
 import arc.struct.ObjectMap;
-import arc.util.Interval;
+import arc.util.Time;
 import mindustry.game.EventType;
 import mindustry.gen.Groups;
 import mindustry.gen.Unit;
@@ -13,7 +13,7 @@ import static mindustry.Vars.state;
 
 public final class TripwireDetector {
     private static final ObjectMap<Unit, Vec2> lastPositions = new ObjectMap<>();
-    private static final Interval interval = new Interval(1);
+    private static float nextDetectTime;
 
     private TripwireDetector() {
     }
@@ -25,11 +25,14 @@ public final class TripwireDetector {
 
     public static void clearCache() {
         lastPositions.clear();
+        nextDetectTime = 0f;
     }
 
     private static void update() {
         if (state == null || !state.isGame() || player == null) return;
-        if (!interval.check(0, TripwireSettings.detectionFrames())) return;
+        if (TripwireData.fences.isEmpty()) return;
+        if (Time.time < nextDetectTime) return;
+        nextDetectTime = Time.time + TripwireSettings.detectionMillis() / 1000f * 60f;
 
         for (int i = 0; i < Groups.unit.size(); i++) {
             Unit unit = Groups.unit.index(i);

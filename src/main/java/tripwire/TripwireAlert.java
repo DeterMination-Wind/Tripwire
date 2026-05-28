@@ -2,20 +2,28 @@ package tripwire;
 
 import arc.Core;
 import arc.math.geom.Vec2;
+import arc.struct.ObjectMap;
+import arc.struct.Seq;
+import arc.util.Time;
+import mindustry.gen.Call;
 import mindustry.gen.Player;
 import mindustry.gen.Unit;
 
 import java.lang.reflect.Method;
 
 import static mindustry.Vars.player;
+import static mindustry.Vars.net;
 import static mindustry.Vars.tilesize;
 import static mindustry.Vars.ui;
 
 public final class TripwireAlert {
+    private static final ObjectMap<String, AlertStack> queuedAlerts = new ObjectMap<>();
+    private static final Seq<AlertStack> alertOrder = new Seq<>();
     private static Method mindustryXNewMarkFromChat;
     private static boolean mindustryXMarkerResolved;
     private static Method vanillaPingMethod;
     private static boolean vanillaPingResolved;
+    private static boolean chatFlushScheduled;
 
     private TripwireAlert() {
     }
@@ -33,9 +41,7 @@ public final class TripwireAlert {
         if (!markWithMindustryX(markerMessage, tileX, tileY)) {
             markWithVanillaPing(x, y, Core.bundle.format("tripwire.alert.ping", unitName));
         }
-        if (TripwireSettings.chatAlert() && ui.chatfrag != null) {
-            ui.chatfrag.addMessage(message);
-        }
+        queueChatAlert(tileX, tileY, unitName);
     }
 
     private static boolean markWithMindustryX(String markerMessage, int tileX, int tileY) {
@@ -72,6 +78,59 @@ public final class TripwireAlert {
                 .getMethod("pingLocation", Player.class, float.class, float.class, String.class)
                 .invoke(null, player, x, y, text);
         } catch (Throwable ignored) {
+        }
+    }
+
+    private static void queueChatAlert(int tileX, int tileY, String unitName) {
+        if (!TripwireSettings.chatAlert()) return;
+
+        String key = tileX + "|" + tileY + "|" + unitName;
+        AlertStack stack = queuedAlerts.get(key);
+        if (stack == null) {
+            stack = new AlertStack(tileX, tileY, unitName);
+            queuedAlerts.put(key, stack);
+            alertOrder.add(stack);
+        }
+        stack.count++;
+
+        if (!chatFlushScheduled) {
+            chatFlushScheduled = true;
+            Time.run(TripwireSettings.chatBatchDelayTicks(), TripwireAlert::flushChatAlerts);
+        }
+    }
+
+    private static void flushChatAlerts() {
+        chatFlushScheduled = false;
+        if (alertOrder.isEmpty()) return;
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < alertOrder.size; i++) {
+            AlertStack stack = alertOrder.get(i);
+            if (i > 0) builder.append('\n');
+            builder.append(Core.bundle.format("tripwire.alert.chat", stack.tileX, stack.tileY, stack.unitName, stack.count));
+        }
+
+        String message = builder.toString();
+        queuedAlerts.clear();
+        alertOrder.clear();
+
+        if (net != null && net.active()) {
+            Call.sendChatMessage(message);
+        } else if (ui != null && ui.chatfrag != null) {
+            ui.chatfrag.addMessage(message);
+        }
+    }
+
+    private static class AlertStack {
+        final int tileX;
+        final int tileY;
+        final String unitName;
+        int count;
+
+        AlertStack(int tileX, int tileY, String unitName) {
+            this.tileX = tileX;
+            this.tileY = tileY;
+            this.unitName = unitName;
         }
     }
 }

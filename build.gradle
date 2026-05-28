@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "tripwire"
-version = "0.0.0"
+version = "1.0.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -48,7 +48,7 @@ jar {
 tasks.register("jarDesktop", Jar) {
     group = "build"
     dependsOn tasks.named("classes")
-    archiveFileName = "Tripwire-dev.jar"
+    archiveFileName = "Tripwire-${project.version}.jar"
     from(sourceSets.main.output)
     from(projectDir) {
         include "mod.json"
@@ -56,22 +56,43 @@ tasks.register("jarDesktop", Jar) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
+def releaseName = "Tripwire-${project.version}"
 def buildOutDir = new File(rootDir.parentFile, "构建/Tripwire")
+def distOutDir = file("dist")
 
-tasks.register("copyDevJarToBuildDir", Copy) {
-    doNotTrackState("Copies local dev artifact to workspace output folder.")
+tasks.register("copyReleaseZipToBuildDir", Copy) {
+    doNotTrackState("Copies release zip artifact to workspace output folder.")
+    dependsOn tasks.named("jar")
+    from(tasks.named("jar").flatMap { it.archiveFile })
+    into(buildOutDir)
+    rename { _ -> "${releaseName}.zip" }
+}
+
+tasks.register("copyReleaseJarToBuildDir", Copy) {
+    doNotTrackState("Copies release jar artifact to workspace output folder.")
     dependsOn tasks.named("jarDesktop")
     from(tasks.named("jarDesktop").flatMap { it.archiveFile })
     into(buildOutDir)
-    rename { _ -> "Tripwire-dev.jar" }
+    rename { _ -> "${releaseName}.jar" }
 }
 
-tasks.named("jarDesktop").configure {
-    finalizedBy tasks.named("copyDevJarToBuildDir")
+tasks.register("copyReleaseZipToDist", Copy) {
+    dependsOn tasks.named("jar")
+    from(tasks.named("jar").flatMap { it.archiveFile })
+    into(distOutDir)
+    rename { _ -> "${releaseName}.zip" }
+}
+
+tasks.register("releaseArtifacts") {
+    group = "build"
+    dependsOn tasks.named("copyReleaseZipToBuildDir")
+    dependsOn tasks.named("copyReleaseJarToBuildDir")
+    dependsOn tasks.named("copyReleaseZipToDist")
 }
 
 tasks.register("deploy") {
     group = "build"
     dependsOn tasks.named("jar")
     dependsOn tasks.named("jarDesktop")
+    dependsOn tasks.named("releaseArtifacts")
 }

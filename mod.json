@@ -1,10 +1,10 @@
 {
-  "name": "tripwire-dev",
+  "name": "tripwire",
   "displayName": "Tripwire",
   "author": "Player",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "minGameVersion": 154,
-  "description": "Geofence mod: draw polyline tripwires on the map to detect enemy unit crossings with configurable alerts.",
+  "description": "Tripwire geofence alerts for Mindustry. Mindustry 地理围栏报警模组。",
   "main": "tripwire.TripwireMod",
   "hidden": true,
   "java": true
