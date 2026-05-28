@@ -3,6 +3,7 @@ package tripwire;
 import arc.Core;
 import arc.Events;
 import arc.input.KeyCode;
+import arc.input.KeyBind;
 import arc.math.geom.Rect;
 import arc.math.geom.Vec2;
 import arc.struct.Seq;
@@ -12,6 +13,8 @@ import static mindustry.Vars.player;
 import static mindustry.Vars.state;
 
 public final class TripwireInput {
+    private static final KeyBind createKey = KeyBind.add("tripwire-create", KeyCode.num1, "tripwire");
+    private static final KeyBind deleteKey = KeyBind.add("tripwire-delete", KeyCode.num2, "tripwire");
     private static final Seq<Vec2> creatingPoints = new Seq<>();
     private static final Rect deleteRect = new Rect();
     private static boolean creating;
@@ -29,9 +32,9 @@ public final class TripwireInput {
     private static void update() {
         if (state == null || !state.isGame() || Core.scene.hasKeyboard()) return;
 
-        if (Core.input.keyTap(KeyCode.num1)) toggleCreate();
+        if (Core.input.keyTap(createKey)) toggleCreate();
 
-        if (Core.input.keyDown(KeyCode.num2)) {
+        if (Core.input.keyDown(deleteKey)) {
             if (!deleting && Core.input.keyTap(KeyCode.mouseLeft) && !Core.scene.hasMouse()) {
                 deleting = true;
                 deleteStartX = Core.input.mouseWorldX();
