@@ -22,17 +22,34 @@ public final class TripwireSettings {
     }
 
     public static void buildSettings(SettingsMenuDialog.SettingsTable table) {
+        section(table, "tripwire-section-detection");
         table.sliderPref(detectInterval, 3, 1, 10, 1, i -> i + "f");
         table.checkPref(chatAlert, true);
         table.checkPref(toastAlert, true);
+
+        section(table, "tripwire-section-display");
         table.checkPref(showFences, true);
         table.checkPref(showMinimap, true);
         table.sliderPref(lineWidth, 2, 1, 8, 1, i -> i + "px");
         table.sliderPref(iconSize, 24, 8, 48, 1, i -> i + "px");
+
+        section(table, "tripwire-section-color");
         table.checkPref(overrideColor, false);
         table.sliderPref(colorR, 255, 0, 255, 1, String::valueOf);
         table.sliderPref(colorG, 220, 0, 255, 1, String::valueOf);
         table.sliderPref(colorB, 64, 0, 255, 1, String::valueOf);
+    }
+
+    private static void section(SettingsMenuDialog.SettingsTable table, String key) {
+        SettingsMenuDialog.SettingsTable.Setting setting = new SettingsMenuDialog.SettingsTable.Setting(key) {
+            @Override
+            public void add(SettingsMenuDialog.SettingsTable table) {
+                table.add(title).color(Color.gray).left().padTop(12f).padBottom(4f).row();
+                table.image().color(Color.gray).height(3f).growX().padBottom(4f).row();
+            }
+        };
+        setting.name = null;
+        table.pref(setting);
     }
 
     public static int detectionFrames() {

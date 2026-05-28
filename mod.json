@@ -6,6 +6,6 @@
   "minGameVersion": 154,
   "description": "Geofence mod: draw polyline tripwires on the map to detect enemy unit crossings with configurable alerts.",
   "main": "tripwire.TripwireMod",
-  "hidden": false,
+  "hidden": true,
   "java": true
 }
