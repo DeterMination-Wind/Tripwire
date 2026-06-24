@@ -1,8 +1,8 @@
 {
-  "name": "tripwire",
+  "name": "Tripwire-dev",
   "displayName": "Tripwire",
-  "author": "Player",
-  "version": "1.0.0",
+  "author": "DeterMination",
+  "version": "0.0.0",
   "minGameVersion": 154,
   "description": "Tripwire geofence alerts for Mindustry. Mindustry 地理围栏报警模组。",
   "main": "tripwire.TripwireMod",
