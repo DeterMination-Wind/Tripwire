@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "tripwire"
-version = "1.0.0"
+version = "1.1.0"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
@@ -28,6 +28,14 @@ configurations.configureEach {
 
 dependencies {
     compileOnly "com.github.Anuken.MindustryJitpack:core:$mindustryVersion"
+
+    def mindustryXClassDirs = [
+        file("../MindustryX-main/work/core/build/classes/java/main"),
+        file("../MindustryX-main/work/core/build/classes/kotlin/main")
+    ].findAll { it.exists() }
+    if (!mindustryXClassDirs.isEmpty()) {
+        compileOnly files(mindustryXClassDirs)
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
