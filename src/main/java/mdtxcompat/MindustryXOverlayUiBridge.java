@@ -36,7 +36,6 @@ public class MindustryXOverlayUiBridge implements OverlayUiBridge {
     private Method getOpen;
     private Method toggle;
     private Method init;
-    private Method isAttached;
     private Method windowSetAvailability;
     private Method windowSetAutoHeight;
     private Method windowSetResizable;
@@ -101,12 +100,10 @@ public class MindustryXOverlayUiBridge implements OverlayUiBridge {
         setState(State.BINDING, reason + " starting lazy bind");
         try {
             Object instance = instanceField.get(null);
-            invoke(init, instance);
-            Object attached = invoke(isAttached, instance);
-            if (!Boolean.TRUE.equals(attached)) {
-                markFailure(new IllegalStateException("OverlayUI attached state is false after init from " + reason), reason);
-                return;
+            if (instance == null) {
+                throw new IllegalStateException("MindustryX OverlayUI.INSTANCE is null");
             }
+            invoke(init, instance);
 
             overlayUi = instance;
             replayPendingWindows();
@@ -130,7 +127,6 @@ public class MindustryXOverlayUiBridge implements OverlayUiBridge {
             getOpen = overlayClass.getMethod("getOpen");
             toggle = overlayClass.getMethod("toggle");
             init = overlayClass.getMethod("init");
-            isAttached = overlayClass.getMethod("isAttached");
             Log.info("[Tripwire OverlayUI bridge] Resolved OverlayUI metadata via loader " + overlayClass.getClassLoader() + ".");
             return true;
         } catch (ClassNotFoundException e) {

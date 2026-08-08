@@ -18,8 +18,11 @@ public final class TripwireSettings {
     public static final String colorR = "tripwire-color-r";
     public static final String colorG = "tripwire-color-g";
     public static final String colorB = "tripwire-color-b";
-    private static final int[] chatBatchDelayMillis = {300, 450, 500, 600, 750, 900, 1000};
-    private static final int defaultChatBatchDelayIndex = 2;
+    private static final int[] chatBatchDelayMillis = {
+        100, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500,
+        5000, 5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000
+    };
+    private static final int defaultChatBatchDelayIndex = 1;
 
     private TripwireSettings() {
     }
@@ -83,8 +86,7 @@ public final class TripwireSettings {
     private static String formatChatBatchDelay(int index) {
         int millis = chatBatchDelayMillis[Mathf.clamp(index, 0, chatBatchDelayMillis.length - 1)];
         if (millis % 1000 == 0) return millis / 1000 + "s";
-        if (millis % 100 == 0) return "0." + millis / 100 + "s";
-        return "0." + millis / 10 + "s";
+        return (millis / 1000) + "." + ((millis % 1000) / 100) + "s";
     }
 
     public static boolean toastAlert() {

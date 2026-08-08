@@ -19,8 +19,8 @@ import static mindustry.Vars.state;
 import static mindustry.Vars.ui;
 
 public final class TripwireInput {
-    private static final KeyBind createKey = KeyBind.add("tripwire-create", KeyCode.num1, "tripwire");
-    private static final KeyBind deleteKey = KeyBind.add("tripwire-delete", KeyCode.num2, "tripwire");
+    private static final KeyBind createKey = KeyBind.add("tripwire-create", KeyCode.unset, "tripwire");
+    private static final KeyBind deleteKey = KeyBind.add("tripwire-delete", KeyCode.unset, "tripwire");
     private static final float leftHintCenterOffset = -150f;
     private static final Seq<Vec2> creatingPoints = new Seq<>();
     private static final Rect deleteRect = new Rect();
@@ -71,6 +71,10 @@ public final class TripwireInput {
         return overlayDeleteMode || keyboardDeleteDragging;
     }
 
+    public static boolean hasConfiguredControlKey() {
+        return isConfigured(createKey) || isConfigured(deleteKey);
+    }
+
     private static void update() {
         updateHints();
 
@@ -80,6 +84,10 @@ public final class TripwireInput {
             return;
         }
         if (Core.scene.hasKeyboard()) return;
+
+        // Shift is used by command mode to add units to a formation / box-select units;
+        // never capture fence hotkeys or drags while it is held.
+        if (isShiftHeld()) return;
 
         if (Core.input.keyTap(createKey) && !deleteModeActive()) toggleCreate();
 
@@ -285,5 +293,18 @@ public final class TripwireInput {
         if (createKey.value.key != null) return createKey.value.key.toString();
         if (createKey.value.min != null && createKey.value.max != null) return createKey.value.min.toString() + "/" + createKey.value.max.toString();
         return "?";
+    }
+
+    private static boolean isShiftHeld() {
+        return Core.input != null && (Core.input.keyDown(KeyCode.shiftLeft) || Core.input.keyDown(KeyCode.shiftRight));
+    }
+
+    private static boolean isConfigured(KeyBind bind) {
+        if (bind == null || bind.value == null) return false;
+        return isConfigured(bind.value.key) || isConfigured(bind.value.min) || isConfigured(bind.value.max);
+    }
+
+    private static boolean isConfigured(KeyCode key) {
+        return key != null && key != KeyCode.unset;
     }
 }
