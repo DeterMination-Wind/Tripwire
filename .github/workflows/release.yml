@@ -25,7 +25,9 @@ jobs:
       - name: Build
         run: |
           chmod +x ./gradlew
-          ./gradlew deploy
+          mkdir -p .ci
+          curl -L --fail -o .ci/Mindustry.jar https://github.com/Anuken/Mindustry/releases/download/v159/Mindustry.jar
+          ./gradlew deploy -PmindustryJar="$PWD/.ci/Mindustry.jar"
 
       - name: Prepare release artifact
         run: |

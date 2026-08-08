@@ -27,6 +27,7 @@ configurations.configureEach {
 }
 
 dependencies {
+    def explicitMindustryJar = (findProperty("mindustryJar") ?: System.getenv("MINDUSTRY_JAR"))?.toString()
     def mindustryXLocalJars = [
         file("../MindustryX-main/work/core/build/libs/core-release.jar"),
         file("../MindustryX-main/Arc/arc-core/build/libs/arc-core-1.0.jar")
@@ -35,7 +36,9 @@ dependencies {
         file("../MindustryX-main/work/core/build/classes/java/main"),
         file("../MindustryX-main/work/core/build/classes/kotlin/main")
     ].findAll { it.exists() }
-    if (!mindustryXLocalJars.isEmpty()) {
+    if (explicitMindustryJar) {
+        compileOnly files(explicitMindustryJar)
+    } else if (!mindustryXLocalJars.isEmpty()) {
         compileOnly files(mindustryXLocalJars + mindustryXClassDirs)
     } else {
         compileOnly "com.github.Anuken.MindustryJitpack:core:$mindustryVersion"
