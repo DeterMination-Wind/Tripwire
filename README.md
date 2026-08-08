@@ -1,4 +1,10 @@
 # Tripwire
+<h1 align="center">
+  <a href="https://github.com/DeterMination-Wind/Tripwire/releases/latest"><img src="https://img.shields.io/github/v/release/DeterMination-Wind/Tripwire?display_name=release&label=Latest%20Release&color=green"></a>
+  <a href="https://github.com/DeterMination-Wind/Tripwire/releases"><img src="https://img.shields.io/github/downloads/DeterMination-Wind/Tripwire/total?label=Downloads&color=blue"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/DeterMination-Wind/Tripwire?label=License"></a>
+  <a href="https://github.com/DeterMination-Wind/Tripwire"><img src="https://img.shields.io/github/stars/DeterMination-Wind/Tripwire?style=flat&label=Star%20this%20mod!&color=yellow"></a>
+</h1>
 
 Tripwire adds clear geofence alerts to Mindustry. Draw warning lines on the map, choose what should be watched, and get notified when enemy units cross the side you care about.
 
