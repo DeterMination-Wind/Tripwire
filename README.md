@@ -11,7 +11,8 @@ Tripwire adds clear geofence alerts to Mindustry. Draw warning lines on the map,
 ## What It Does
 
 - Draw tripwire fences directly in-game.
-- Pick the crossing direction for each fence.
+- Pick the crossing direction for each fence (inner / outer / both ways).
+- Floating "Draw" / "Delete" overlay buttons on MindustryX to create fences or box-delete them without a keybind.
 - Choose which unit types should trigger alerts.
 - Show fence visuals on the map and minimap.
 - Receive center-screen warnings, chat alerts, and map markers.
@@ -19,7 +20,7 @@ Tripwire adds clear geofence alerts to Mindustry. Draw warning lines on the map,
 
 ## Getting Started
 
-Install the latest release, enable Tripwire in the mod list, then set the Tripwire controls in Settings. Create a fence, select the watched units and crossing side, and adjust alert timing or display options from the Tripwire settings page.
+Install the latest release, enable Tripwire in the mod list, then bind the Tripwire controls in Settings — no key is assigned by default. On MindustryX you can also use the floating "Draw"/"Delete" overlay buttons instead of keybinds. Create a fence, select the watched units and crossing side, and adjust alert timing or display options from the Tripwire settings page.
 
 ## Notes
 
@@ -34,7 +35,8 @@ Tripwire 为 Mindustry 添加清晰的地理围栏报警。你可以在地图上
 ## 功能
 
 - 在游戏内直接绘制围栏线。
-- 为每条围栏选择穿越方向。
+- 为每条围栏选择穿越方向（内侧 / 外侧 / 双向）。
+- MindustryX 上提供浮动"绘制"/"删除"overlay 按钮，无需按键即可绘制围栏或框选删除。
 - 选择哪些单位类型会触发报警。
 - 在地图和小地图上显示围栏。
 - 通过屏幕中央提示、聊天栏消息和地图标点提醒。
@@ -42,7 +44,7 @@ Tripwire 为 Mindustry 添加清晰的地理围栏报警。你可以在地图上
 
 ## 开始使用
 
-安装最新版本，在模组列表中启用 Tripwire，然后到设置里配置 Tripwire 控制键。创建围栏后，选择需要监视的单位和穿越方向，并在 Tripwire 设置页调整报警时间与显示选项。
+安装最新版本，在模组列表中启用 Tripwire，然后到设置里绑定 Tripwire 控制键——默认不绑定任何按键。在 MindustryX 上也可以直接使用浮动"绘制"/"删除"overlay 按钮代替按键。创建围栏后，选择需要监视的单位和穿越方向，并在 Tripwire 设置页调整报警时间与显示选项。
 
 ## 说明
 
