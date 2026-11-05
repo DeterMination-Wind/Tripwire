@@ -1,5 +1,7 @@
 # Tripwire / 地理围栏
 
+> [NOTE] 若有反馈，请发送反馈到bugsoc@qq.com / If you have any feedback, please send it to bugsoc@qq.com
+
 ## 中文
 
 > 把地图上的关键边界变成可观察的警戒线。
